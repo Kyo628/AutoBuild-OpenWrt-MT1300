@@ -43,7 +43,7 @@ on:
 env:
   # GL-inet OpenWrt
   REPO_OP_GL: https://github.com/gl-inet/openwrt.git
-  REPO_OP_GL_BRANCH: openwrt-19.07.8
+  REPO_OP_GL_BRANCH: openwrt-19.07.7
   # Lede Openwrt
   REPO_OP_LEDE: https://github.com/coolsnowwolf/lede
   REPO_OP_LEDE_BRANCH: master
@@ -55,8 +55,8 @@ env:
   # TimeZone
   TZ: Asia/Shanghai
   # Upload settings
-  UPLOAD_BIN_DIR: true
-  UPLOAD_FIRMWARE: true
+  UPLOAD_BIN_DIR: false
+  UPLOAD_FIRMWARE: false
   UPLOAD_RELEASE: true
   UPLOAD_PLUGIN: true
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
