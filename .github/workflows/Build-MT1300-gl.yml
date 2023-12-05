@@ -75,39 +75,19 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        echo "Remove All docker images"
-        docker rmi `docker images -q`
-        echo "Deleting flies, please wait ..."
-        #sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
-        sudo rm -rf \
-          /usr/local/lib/android \
-          /usr/share/dotnet \
-          /etc/apt/sources.list.d/* \
-          /etc/mysql \
-          /etc/php \
-          /opt/ghc
-        echo "Uninstalling unnecessary packages, please wait..."
-        sudo -E apt-get -y purge \
-          azure-cli \
-          ghc* \
-          zulu* \
-          hhvm \
-          llvm* \
-          firefox \
-          google* \
-          dotnet* \
-          powershell \
-          openjdk* \
-          php*
-        # mysql*
-        echo "Installing dependent packages, please wait..."
-        sudo -E apt-get -y update
-        sudo -E apt-get -y install $(curl -fsSL git.io/depends-ubuntu-2004)
-        sudo -E apt-get -y autoremove --purge
-        sudo -E apt-get -y clean
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
+        sudo tee -a /etc/wsl.conf << EOF > /dev/null
+        [interop]
+        appendWindowsPath = false
+        EOF
+        exit
 
     # Clone GL-inet 和 lede OpenWrt 到 workdir 目录下，并进行连接
     - name: Clone source code
@@ -161,14 +141,6 @@ jobs:
         chmod +x $CUSTOM_CONFIG
         cd openwrt
         $GITHUB_WORKSPACE/$CUSTOM_CONFIG
-    
-    # 启用 SSH 连接
-    - name: SSH connection to Actions
-      uses: P3TERX/ssh2actions@v1.0.0
-      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh != 'false') || contains(github.event.action, 'ssh')
-      env:
-        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
     # 下载 package
     - name: Download package
@@ -301,14 +273,14 @@ jobs:
       if: steps.tag.outputs.status == 'success' && !cancelled()
       with:
         retain_days: 30
-        keep_minimum_runs: 10
+        keep_minimum_runs: 3
     
     # 最少保留 10 个 release 版本 并删除与旧版本关联的 tag
     - name: Remove old Releases
       uses: dev-drprasad/delete-older-releases@v0.1.0
       if: steps.tag.outputs.status == 'success' && !cancelled()
       with:
-        keep_latest: 10
+        keep_latest: 3
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
