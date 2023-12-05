@@ -43,7 +43,7 @@ on:
 env:
   # GL-inet OpenWrt
   REPO_OP_GL: https://github.com/gl-inet/openwrt.git
-  REPO_OP_GL_BRANCH: openwrt-19.07.7
+  REPO_OP_GL_BRANCH: openwrt-19.07.8
   # Lede Openwrt
   REPO_OP_LEDE: https://github.com/coolsnowwolf/lede
   REPO_OP_LEDE_BRANCH: master
@@ -63,7 +63,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
